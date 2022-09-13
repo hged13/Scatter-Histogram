@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+
+body { font: 12px Arial;}
+
+
+path { 
+    stroke:darkblue;
+    stroke-width: 4;
+    fill: none;
+}
+
+
+
+</style>
+<body>
+
+<!-- load the d3.js library -->    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.0/d3.min.js"></script>
+
+<script>
+
+
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 70, right: 50, bottom: 120, left: 90}, width = 900 - margin.left - margin.right
+height = 450 - margin.top - margin.bottom;
+
+
+
+//set the ranges 
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleLinear().range([height,0]);
+
+var x2 = d3.scaleTime().range([0, 550]);
+var y2 = d3.scaleLinear().range([300,0]);
+
+
+var x4 = d3.scaleTime().range([0, 550]);
+var y4 = d3.scaleLinear().range([300,0]);
+
+var x3 = d3.scaleLinear()
+.domain([0, 1080767]) .range([0, width]);
+var y3 = d3.scaleLinear() .range([height, 0]);
+
+var x5 = d3.scaleLinear()
+.domain([4400,6786]) .range([0, width]);
+var y5 = d3.scaleLinear() .range([height, 0]);
+
+//define line1
+var valueline = d3.line()
+.curve(d3.curveCardinal)
+.x(function(d) { return x4(d.date); })
+.y(function(d) { return y4(d.visitors) })
+
+//define line2
+var valueline2 = d3.line()
+.curve(d3.curveCardinal)
+.x(function(d) { return x2(d.date); }) .y(function(d) { return y2(d.park) })
+
+
+
+
+// set the parameters for the histogram
+var histogram = d3.histogram() .value(function(d) { return d.visitors; }) 
+.domain(x3.domain()) .thresholds(x3.ticks(10));
+
+
+
+//place the svg objects
+
+var svg2 = d3.select("body")
+    .append("svg") 
+    .attr("width", 550 + margin.left + margin.right)
+    .attr("height", 300 + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
+
+ var svg4 = d3.select("body")
+    .append("svg") 
+    .attr("width", 550+ margin.left + margin.right)
+    .attr("height", 300 + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + (margin.left)+ "," + margin.top + ")")
+
+var svg = d3.select("body")
+    .append("svg") 
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform","translate(" + margin.left  +"," + margin.top+ ")")
+
+    var svg3 = d3.select("body").append("svg") .attr("width", width + margin.left + margin.right) .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform","translate(" + (margin.left + 20) + "," + (margin.top+10) + ")");
+
+    //Parse the data into wanted format
+    var parseYear = d3.timeParse("%b-%y");
+
+    
+
+//get the data
+d3.csv("Counties_Visitation2.csv").then(function(data) {
+//loop through and format the data
+data.forEach(function(d){
+    d.date = parseYear(d.Date);
+    d.park = +d.Park;
+    d.visitors = +d.Visitors
+    
+});
+
+    
+    //scale the ranges
+    x.domain(d3.extent(data,function(d){ return d.visitors;}));
+    y.domain([4600,d3.max(data, function(d){return d.park;})]);
+
+    
+    x2.domain(d3.extent(data,function(d){ return d.date;}));
+    y2.domain([4500,d3.max(data, function(d){return d.park;})]);
+
+    
+    x4.domain(d3.extent(data,function(d){ return d.date;}));
+    y4.domain([0,d3.max(data, function(d){return d.visitors;})]);
+
+    
+
+   
+
+    
+
+//add the valueline path
+
+
+svg2.append("path")
+.data([data])
+.attr("class","line")
+.attr("d",valueline2)
+.style("stroke","lightskyblue");
+
+svg4.append("path")
+.data([data])
+.attr("class","line")
+.attr("d",valueline)
+.style("stroke","lightskyblue");
+;
+
+  // Add the X Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)");
+        svg.append("text")
+      .attr("x", width/2 )
+      .attr("y",  height + margin.top )
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+      .text("Yellowstone Visits per Month");    
+  // Add the Y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+      svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+      .text("Park County Employees per Month");   
+      // Add the X Axis
+  svg2.append("g")
+    .attr("transform", "translate(0," + 300+ ")")
+    .call(d3.axisBottom(x2)
+    .tickFormat(d3.timeFormat(("%b-%Y")))
+    .ticks(20)
+    .ticks(d3.timeMonth.every(6)))
+    
+
+    
+    .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)");
+    svg2.append("text")
+      .attr("x", width/3 )
+      .attr("y",  height + margin.top + 40 )
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+
+      .text("Month");   
+    
+     
+
+    
+  // Add the Y Axis
+  svg2.append("g")
+      .call(d3.axisLeft(y2));
+      svg2.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+      .text("Park County Employees");   
+      svg2.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left+20)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .style("font-size","10px")
+      .style("font-weight","bold")
+      .style("fill", "firebrick")
+      .text("(Scale starting at 4500)");   
+
+            // Add the X Axis
+  svg4.append("g")
+  .attr("transform", "translate(0," + 300+ ")")
+    .call(d3.axisBottom(x2)
+    .tickFormat(d3.timeFormat(("%b-%Y")))
+    .ticks(d3.timeMonth.every(6)))
+    .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)");
+    svg4.append("text")
+      .attr("x", width/3 )
+      .attr("y",  height + margin.top + 40 )
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+
+      .text("Month");     
+
+   //Add the Y Axis
+  svg4.append("g")
+      .call(d3.axisLeft(y4));
+      svg4.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+      .text("Park Visits");    
+
+
+  
+  // Add the scatterplot
+  svg.selectAll("dot")
+      .data(data)
+.enter().append("circle")
+.attr("r", 3)
+.style("fill","red")
+.attr("cx", function(d) { return x(d.visitors); } ) .attr("cy", function(d) { return y(d.park); });
+
+
+  // Add the scatterplot
+  svg2.selectAll("dot")
+      .data(data)
+.enter().append("circle")
+.attr("r", 3)
+.style("fill","darkred")
+
+.attr("cx", function(d) { return x2(d.date); } ) .attr("cy", function(d) { return y2(d.park); })
+
+//add text 
+svg2.append("text")
+        .attr("x",470)
+        .attr("y", 265)
+      .attr("text-anchor", "start")
+      .style("fill", "firebrick")
+      .style("font-weight","bold")
+
+      .text("⬅ Covid-19");
+      svg2.append("text")
+        .attr("x",470)
+        .attr("y", 275)
+      .attr("text-anchor", "start")
+      .style("font-weight","bold")
+
+      .style("fill", "firebrick")
+      .text("Lockdown");
+      
+
+   //Add the scatterplot
+  svg4.selectAll("dot")
+      .data(data)
+.enter().append("circle")
+.style("fill","darkred")
+
+.attr("r", 3)
+.attr("cx", function(d) { return x4(d.date); } ) .attr("cy", function(d) { return y4(d.visitors); });
+
+  // group the data for the bars
+var bins = histogram(data);
+
+
+  // Scale the range of the data in the y domain
+y3.domain([0, d3.max(bins, function(d) { return d.length; })]);
+
+
+
+  // add the x Axis
+  svg3.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x3));
+      svg3.append("text")
+      .attr("x", width/2 )
+      .attr("y",  height + margin.top + 20 )
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+      .text("Monthly Visitors Recorded");    
+  // add the y Axis
+  svg3.append("g")
+      .call(d3.axisLeft(y3));
+      svg3.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .style("font-size","15px")
+      .style("font-weight","bold")
+      .text("Number of Occurences ");   
+      //add the histogram
+      svg3.selectAll("rect")
+      .data(bins)
+      .enter()
+      .append("rect")
+        .attr("x", 1)
+        .attr("transform", function(d) { return "translate(" + x3(d.x0) + "," + y3(d.length) + ")"; })
+        .attr("width", function(d) { return x3(d.x1) - x3(d.x0) -1 ; })
+        .attr("height", function(d) { return height - y3(d.length); })
+        .style("fill", "red")
+
+         // Scale the range of the data in the y domain
+y5.domain([0, d3.max(bins, function(d) { return d.length; })]);
+//add title
+svg2.append("text")
+      .attr("x", (500 / 2))
+      .attr("y", 0 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "20px")
+      .style("text-decoration", "underline")
+      
+      .text("Employees in Park County, Montana (Jan 2012- Dec 2021)");
+//add title
+      svg4.append("text")
+      .attr("x", (500 / 2))
+      .attr("y", 0 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "20px")
+      .style("text-decoration", "underline")
+      .text("Yellowstone National Park Monthly Recreational Visits (Jan 2012- Dec 2021)");
+//add title
+      svg.append("text")
+      .attr("x", (width / 2))
+      .attr("y", 0 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "20px")
+      .style("text-decoration", "underline")
+      .text("Monthly Yellowstone Visits vs Monthly Total of Park County Employees");
+//add title
+      svg3.append("text")
+      .attr("x", (width / 2))
+      .attr("y", 0 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "20px")
+      .style("text-decoration", "underline")
+      .text("Yellowstone Monthly Visitation Distribution (Jan 2012-Dec 2021) ");
+
+
+
+
+});
+
+
+</script>
+</body>
