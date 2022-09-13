@@ -41,8 +41,8 @@ var x4 = d3.scaleTime().range([0, 550]);
 var y4 = d3.scaleLinear().range([300,0]);
 
 var x3 = d3.scaleLinear()
-.domain([0, 1080767]) .range([0, width]);
-var y3 = d3.scaleLinear() .range([height, 0]);
+.domain([0, 1080767]) .range([0, 550]);
+var y3 = d3.scaleLinear() .range([300, 0]);
 
 var x5 = d3.scaleLinear()
 .domain([4400,6786]) .range([0, width]);
@@ -91,7 +91,65 @@ var svg = d3.select("body")
     .append("g")
     .attr("transform","translate(" + margin.left  +"," + margin.top+ ")")
 
-    var svg3 = d3.select("body").append("svg") .attr("width", width + margin.left + margin.right) .attr("height", height + margin.top + margin.bottom)
+
+var holder = d3.select("body") // select the 'body' element
+      .append("svg")
+      .attr("width", 449)
+      .attr("height", 500);
+// draw a circle
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  100)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text("Hypothesis:");
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  120)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text("High levels of Yellowstone visitors"); 
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  140)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text("correlates to a high number"); 
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  160)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text(" of Park County employees"); 
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  210)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text("Data Sources:"); 
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  230)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text("National Bureau of Labor Statistics"); 
+      holder.append("text")
+      .attr("x", 220 )
+      .attr("y",  250)
+      .style("text-anchor", "middle")
+      .style("font-size","20px")
+      .style("font-weight","bold")
+      .text("Yellowstone National Park Statistics"); 
+
+
+
+    var svg3 = d3.select("body").append("svg") .attr("width", 550+ margin.left + margin.right) .attr("height", 300 + margin.top + margin.bottom)
     .append("g")
     .attr("transform","translate(" + (margin.left + 20) + "," + (margin.top+10) + ")");
 
@@ -147,6 +205,7 @@ svg4.append("path")
 
   // Add the X Axis
   svg.append("g")
+
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x))
       .selectAll("text")
@@ -293,6 +352,9 @@ svg2.append("text")
 
       .style("fill", "firebrick")
       .text("Lockdown");
+
+      
+      
       
 
    //Add the scatterplot
@@ -315,10 +377,10 @@ y3.domain([0, d3.max(bins, function(d) { return d.length; })]);
 
   // add the x Axis
   svg3.append("g")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + 300 + ")")
       .call(d3.axisBottom(x3));
       svg3.append("text")
-      .attr("x", width/2 )
+      .attr("x", 550/2 )
       .attr("y",  height + margin.top + 20 )
       .style("text-anchor", "middle")
       .style("font-size","15px")
@@ -330,7 +392,7 @@ y3.domain([0, d3.max(bins, function(d) { return d.length; })]);
       svg3.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left)
-      .attr("x",0 - (height / 2))
+      .attr("x",0 - (300 / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
       .style("font-size","15px")
@@ -344,7 +406,7 @@ y3.domain([0, d3.max(bins, function(d) { return d.length; })]);
         .attr("x", 1)
         .attr("transform", function(d) { return "translate(" + x3(d.x0) + "," + y3(d.length) + ")"; })
         .attr("width", function(d) { return x3(d.x1) - x3(d.x0) -1 ; })
-        .attr("height", function(d) { return height - y3(d.length); })
+        .attr("height", function(d) { return 300 - y3(d.length); })
         .style("fill", "red")
 
          // Scale the range of the data in the y domain
@@ -376,7 +438,7 @@ svg2.append("text")
       .text("Monthly Yellowstone Visits vs Monthly Total of Park County Employees");
 //add title
       svg3.append("text")
-      .attr("x", (width / 2))
+      .attr("x", (500 / 2))
       .attr("y", 0 - (margin.top / 2))
       .attr("text-anchor", "middle")
       .style("font-size", "20px")
